@@ -1,9 +1,9 @@
 const userModel = require("../Models/userModel");
 const productModel = require("../Models/productModel");
-
 const sessionModel = require("../Models/sessionModel");
 const jwt = require("jsonwebtoken");
-const secretKey = "s1234rf,.lp";
+require('dotenv').config();
+const secretKey =process.env.SECRET_KEY ;
 const bcrypt = require("bcrypt");
 const userController = {
   register: async (req, res) => {
@@ -132,7 +132,6 @@ const userController = {
   },
   addToCart: async (req, res) => {
     try {
-      console.log('hi')
       const user = await userModel.findById(req.params.id);
       const product = await productModel.findById(req.params.productid);
       user.shoppingCart.push(product);

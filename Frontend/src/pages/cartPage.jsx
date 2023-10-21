@@ -39,7 +39,7 @@ export default function CartPage() {
     }
 
     fetchData();
-  }, []);
+  }, [cookies,navigate]);
 
   function redirectTocheckout() {
     navigate("/checkout", { state: { total: total } });

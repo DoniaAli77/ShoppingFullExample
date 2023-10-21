@@ -2,10 +2,11 @@ const express = require("express");
 const cookieParser=require('cookie-parser')
 const app = express();
 const mongoose = require("mongoose");
-const Backend_URL = "http://localhost:3000/";
 const productRouter = require("./Routes/products");
 const userRouter = require("./Routes/users");
 const authRouter = require("./Routes/auth");
+require('dotenv').config();
+
 const authenticationMiddleware = require("./Middleware/authenticationMiddleware");
 const cors = require("cors");
 app.use(express.json());
@@ -15,7 +16,7 @@ app.use(cookieParser())
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: process.env.ORIGIN,
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   })
@@ -37,11 +38,11 @@ app.use(authenticationMiddleware);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 
-const db_name = "lab2";
+const db_name = process.env.DB_NAME;
 // * Cloud Connection
 // const db_url = `mongodb+srv://TestUser:TestPassword@cluster0.lfqod.mongodb.net/${db_name}?retryWrites=true&w=majority`;
 // * Local connection
-const db_url = `mongodb://localhost:27017/${db_name}`; // if it gives error try to change the localhost to 127.0.0.1
+const db_url = `${process.env.DB_URL}/${db_name}`; // if it gives error try to change the localhost to 127.0.0.1
 
 // ! Mongoose Driver Connection
 
@@ -60,4 +61,4 @@ mongoose
 app.use(function (req, res, next) {
   return res.status(404).send("404");
 });
-app.listen(3000, () => console.log("server started"));
+app.listen(process.env.PORT, () => console.log("server started"));
