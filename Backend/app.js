@@ -1,21 +1,39 @@
 const express = require("express");
+const cookieParser=require('cookie-parser')
 const app = express();
 const mongoose = require("mongoose");
+const Backend_URL = "http://localhost:3000/";
 const productRouter = require("./Routes/products");
 const userRouter = require("./Routes/users");
-const authRouter=require('./Routes/auth')
-const {authMiddleware}= require('./Middleware/authenticationMiddleware')
+const authRouter = require("./Routes/auth");
+const authenticationMiddleware = require("./Middleware/authenticationMiddleware");
+const cors = require("cors");
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "*");
 
-  next()
-});
+app.use(cookieParser())
 
-app.use('/api/v1',authRouter)
-app.use(authMiddleware)
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    methods: ["GET", "POST", "DELETE", "PUT"],
+    credentials: true,
+  })
+);
+
+// app.use((req, res, next) => {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Methods", "GET,PUT,POST,DELETE,OPTIONS,HEAD");
+//   res.setHeader(
+//     "Access-Control-Expose-Headers",
+//     "*"
+//   );
+
+//   next();
+// });
+
+app.use("/api/v1", authRouter);
+app.use(authenticationMiddleware);
 app.use("/api/v1/products", productRouter);
 app.use("/api/v1/users", userRouter);
 

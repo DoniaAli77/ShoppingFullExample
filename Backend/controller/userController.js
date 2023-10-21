@@ -1,12 +1,14 @@
 const userModel = require("../Models/userModel");
+const productModel = require("../Models/productModel");
+
 const sessionModel = require("../Models/sessionModel");
 const jwt = require("jsonwebtoken");
 const secretKey = "s1234rf,.lp";
-
+const bcrypt = require("bcrypt");
 const userController = {
   register: async (req, res) => {
     try {
-      const { email, password, displayName, userType } = req.body;
+      const { email, password, displayName, role } = req.body;
 
       // Check if the user already exists
       const existingUser = await userModel.findOne({ email });
@@ -15,14 +17,14 @@ const userController = {
       }
 
       // Hash the password
-      // const hashedPassword = await bcrypt.hash(password, 10);
+      const hashedPassword = await bcrypt.hash(password, 10);
 
       // Create a new user
       const newUser = new userModel({
         email,
-        password,
+        password: hashedPassword,
         displayName,
-        userType,
+        role,
       });
 
       // Save the user to the database
@@ -41,23 +43,26 @@ const userController = {
       // Find the user by email
       const user = await userModel.findOne({ email });
       if (!user) {
-        return res.status(401).json({ message: "email not found" });
+        return res.status(404).json({ message: "email not found" });
       }
 
+      console.log("password: ", user.password);
       // Check if the password is correct
-      // const passwordMatch = await bcrypt.compare(password, user.password);
-      // if (!passwordMatch) {
-      //   return res.status(401).json({ message: "incorect password" });
-      // }
-      const x=1
+
+      const passwordMatch = await bcrypt.compare(password, user.password);
+      if (!passwordMatch) {
+        return res.status(405).json({ message: "incorect password" });
+      }
 
       const currentDateTime = new Date();
-      const expiresAt = new Date(+currentDateTime + 180000); // expire in 3 minutes
+      const expiresAt = new Date(+currentDateTime + 1800000); // expire in 3 minutes
       // Generate a JWT token
       const token = jwt.sign(
-        { userId: user._id, userType: user.role },
+        { user: { userId: user._id, role: user.role } },
         secretKey,
-        { expiresIn: 3 * 60 * 60 }
+        {
+          expiresIn: 3 * 60 * 60,
+        }
       );
       let newSession = new sessionModel({
         userId: user._id,
@@ -66,9 +71,14 @@ const userController = {
       });
       await newSession.save();
       return res
+        .cookie("token", token, {
+          expires: expiresAt,
+          withCredentials: true,
+          httpOnly: false,
+          SameSite:'none'
+        })
         .status(200)
-        .cookie("token", token, { expires: expiresAt })
-        .json("login successfully");
+        .json({ message: "login successfully", user });
     } catch (error) {
       console.error("Error logging in:", error);
       res.status(500).json({ message: "Server error" });
@@ -122,6 +132,7 @@ const userController = {
   },
   addToCart: async (req, res) => {
     try {
+      console.log('hi')
       const user = await userModel.findById(req.params.id);
       const product = await productModel.findById(req.params.productid);
       user.shoppingCart.push(product);

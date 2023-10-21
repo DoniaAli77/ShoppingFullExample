@@ -2,15 +2,21 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { useState } from "react";
+let backend_url = "http://localhost:3000/api/v1";
+
 export default function ProductCard({ product }) {
   const [added, setAdded] = useState(false);
+  let role = localStorage.getItem("role");
+
   async function HandleAdd(id) {
     let uid = localStorage.getItem("userId");
     console.log(id);
     if (added) {
       try {
-        let response = await axios.post(
-          `http://localhost:3000/users/removeFromcart/${uid}/${id}`
+        let response = await axios.put(
+          `${backend_url}/users/removeFromcart/${uid}/${id}`,
+          null,
+          { withCredentials: true }
         );
         setAdded(false);
         console.log(response);
@@ -19,8 +25,10 @@ export default function ProductCard({ product }) {
       }
     } else
       try {
-        let response = await axios.post(
-          `http://localhost:3000/users/addTocart/${uid}/${id}`
+        let response = await axios.put(
+          `${backend_url}/users/addTocart/${uid}/${id}`,
+          null,
+          { withCredentials: true }
         );
         setAdded(true);
         console.log(response);
@@ -35,8 +43,14 @@ export default function ProductCard({ product }) {
         <Card.Body>
           <Card.Title>{product.name}</Card.Title>
           <Card.Text>
-            quantity:{product.quantity}
-            <br />
+            {role == "admin" ? (
+              <>
+                quantity:{product.quantity}
+                <br />
+              </>
+            ) : (
+              <></>
+            )}
             Price:{product.price}
           </Card.Text>
           <Button variant="primary" onClick={() => HandleAdd(product._id)}>

@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const userController = require("../controller/userController");
+const authorizationMiddleware=require('../Middleware/authorizationMiddleware')
 
 // * Get all users
 router.get("/",  authorizationMiddleware(['admin']),userController.getAllUsers);
@@ -18,7 +19,7 @@ router.delete("/:id", authorizationMiddleware(['admin']), userController.deleteU
 router.get("/cart/:id",  authorizationMiddleware(['admin','customer']),userController.getShoppingCart);
 
 //* add to cart
-router.post("/addTocart/:id/:productid", authorizationMiddleware(['admin','customer']), userController.addToCart);
+router.put("/addTocart/:id/:productid", authorizationMiddleware(['admin','customer']), userController.addToCart);
 
 //* remove from cart
 router.put("/removeFromcart/:id/:productid",  authorizationMiddleware(['admin','customer']), userController.removeFromCart);
