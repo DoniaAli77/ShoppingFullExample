@@ -10,12 +10,12 @@ const Signup = () => {
   const [inputValue, setInputValue] = useState({
     email: "",
     password: "",
-    displayName: "",
+    username: "",
   });
   const [successMessage, setSucessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
 
-  const { email, password, displayName } = inputValue;
+  const { email, password, username } = inputValue;
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     console.log(name);
@@ -42,6 +42,7 @@ const Signup = () => {
         `${backend_url}/register`,
         {
           ...inputValue,
+          displayName:username,
           role: "customer",
         },
         { withCredentials: true }
@@ -66,7 +67,7 @@ const Signup = () => {
       ...inputValue,
       email: "",
       password: "",
-      displayName: "",
+      // displayName: "",
     });
   };
 

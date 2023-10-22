@@ -49,19 +49,19 @@ const Login = () => {
         // handleSuccess(message);
         localStorage.setItem("userId",response.data.user._id)
         localStorage.setItem("role",response.data.user.role)
-
+        setSucessMessage(message)
         setTimeout(() => {
           navigate("/");
         }, 1000);
       } else {
-        console.log(message);
+        console.log();
+        setErrorMessage(message);
 
-        // handleError(message);
+
       }
     } catch (error) {
       console.log(error);
-      // handleError(error.message);
-
+      setErrorMessage(error.message);
     }
     setInputValue({
       ...inputValue,

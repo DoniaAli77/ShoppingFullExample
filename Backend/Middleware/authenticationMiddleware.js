@@ -4,7 +4,7 @@ const secretKey = "s1234rf,.lp";
 module.exports = function authenticationMiddleware(req, res, next) {
   const cookie = req.cookies;
   
-  console.log(req.headers);
+  // console.log(req.headers);
 
   if (!cookie) {
     return res.status(401).json({ message: "No Cookie provided" });
@@ -20,7 +20,7 @@ module.exports = function authenticationMiddleware(req, res, next) {
     }
 
     // Attach the decoded user ID to the request object for further use
-    console.log(decoded.user)
+    // console.log(decoded.user)
     
     req.user = decoded.user;
     next();
