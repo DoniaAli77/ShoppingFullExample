@@ -2,11 +2,13 @@ import Card from "react-bootstrap/Card";
 import Button from "react-bootstrap/Button";
 import axios from "axios";
 import { useState } from "react";
+import { useLocation } from "react-router-dom";
 let backend_url = "http://localhost:3000/api/v1";
 
 export default function ProductCard({ product }) {
   const [added, setAdded] = useState(false);
   let role = localStorage.getItem("role");
+  let location = useLocation();
 
   async function HandleAdd(id) {
     let uid = localStorage.getItem("userId");
@@ -33,7 +35,7 @@ export default function ProductCard({ product }) {
         setAdded(true);
         console.log(response);
       } catch (error) {
-        console.log(error.message);
+        console.log(error);
       }
   }
   return (
@@ -53,9 +55,13 @@ export default function ProductCard({ product }) {
             )}
             Price:{product.price}
           </Card.Text>
-          <Button variant="primary" onClick={() => HandleAdd(product._id)}>
-            {added ? "remove" : "Add to cart"}
-          </Button>
+          {location.pathname == "/cart" ? (
+            <></>
+          ) : (
+            <Button variant="primary" onClick={() => HandleAdd(product._id)}>
+              {added ? "remove" : "Add to cart"}
+            </Button>
+          )}
         </Card.Body>
       </Card>
     </>

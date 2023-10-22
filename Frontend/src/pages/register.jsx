@@ -61,7 +61,7 @@ const Signup = () => {
       }
     } catch (error) {
       console.log(error);
-      setErrorMessage(message);
+      setErrorMessage(error.message);
     }
     setInputValue({
       ...inputValue,
